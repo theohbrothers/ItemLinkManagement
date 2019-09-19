@@ -17,6 +17,7 @@ function Add-Link {
         [ValidateNotNullOrEmpty()]
         [switch]$Force
     )
+    "ItemType: '$($ItemType)', Path: '$($Path)', Value: '$($Value)'" | Write-Verbose
     $item = Get-Item -Path $Path -ErrorAction Stop
     if ($item) {
         if (!$item.LinkType) {
