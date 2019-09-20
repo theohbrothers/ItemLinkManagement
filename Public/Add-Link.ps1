@@ -1,7 +1,7 @@
 function Add-Link {
     [CmdletBinding()]
     Param (
-        [Parameter(Mandatory=$true,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [string]$Path
         ,
