@@ -18,7 +18,7 @@ function Add-Link {
         [switch]$Force
     )
     "ItemType: '$($ItemType)', Path: '$($Path)', Value: '$($Value)'" | Write-Verbose
-    $item = Get-Item -Path $Path -ErrorAction Stop
+    $item = Get-Item -Path $Path -ErrorAction SilentlyContinue
     if ($item) {
         if (!$item.LinkType) {
             throw "Item '$Path' is not a SymbolicLink or Junction."
