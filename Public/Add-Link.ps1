@@ -26,7 +26,7 @@ function Add-Link {
         if ($item.Target -eq $Value) {
             return
         }
-        if ($item.ItemType -eq 'Junction') {        # New-Item -Force does not work for junctions
+        if ($item.LinkType -eq 'Junction') {        # New-Item -Force does not work for junctions
             $item.Delete()                          # Remove-Item -Force and -Confirm:$false do not suppress confirmation for removal if items exists within symlink or junction target
         }
     }
