@@ -33,12 +33,15 @@ function Add-Link {
                     throw "Item '$Path' is not a SymbolicLink or Junction."
                 }
                 if (($item.LinkType -eq $LinkType) -and ($item.Target -eq $Value)) {
+                    "Matching item '$Path' already exists. Skipping" | Write-Verbose
                     return
                 }
-                if ($item.LinkType -eq 'Junction') {        # New-Item -Force does not work for junctions
-                    $item.Delete()                          # Remove-Item -Force and -Confirm:$false do not suppress confirmation for removal if items exists within symlink or junction target
+                if ($item.LinkType -eq 'Junction') {                                # New-Item -Force does not work for junctions, hence the need to remove the existing item
+                    "Removing existing junction item '$Path'" | Write-Verbose
+                    $item.Delete()                                                  # Remove-Item -Force and -Confirm:$false do not suppress confirmation for removal if items exists within symlink or junction target
                 }
             }
+            "Creating item '$Path'" | Write-Verbose
             New-Item -Path $Path -ItemType $ItemType -Value $Value -Force:$Force
         }catch {
             $_ | Write-Error
