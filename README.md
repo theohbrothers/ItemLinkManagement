@@ -1,7 +1,7 @@
-# Add-Link
+# ItemLinksManagement
 
 ```powershell
-Import-Module .\Add-Link.psm1 -Force
+Import-Module .\ItemLinksManagement.psm1 -Force
 
 # Add symbolic link
 Add-Link -Path $path -ItemType SymbolicLink -Value $value
