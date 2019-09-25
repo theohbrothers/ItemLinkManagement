@@ -1,3 +1,6 @@
+$PSDefaultParameterValues.Clear()
+Set-StrictMode -Version Latest
+
 ##################
 # Module globals #
 ##################
