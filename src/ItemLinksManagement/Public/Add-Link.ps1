@@ -32,7 +32,7 @@ function Add-Link {
                 if (!$item.LinkType) {
                     throw "Item '$Path' is not a SymbolicLink or Junction."
                 }
-                if (($item.LinkType -eq $LinkType) -and ($item.Target -eq $Value)) {
+                if (($item.LinkType -eq $ItemType) -and ($item.Target -eq $Value)) {
                     "Matching item '$Path' already exists. Skipping" | Write-Verbose
                     return
                 }
