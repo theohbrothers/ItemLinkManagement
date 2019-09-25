@@ -1,5 +1,7 @@
 # ItemLinksManagement
 
+A powershell module for managing symlinks and junctions.
+
 ```powershell
 Import-Module .\src\ItemLinksManagement\ItemLinksManagement.psm1 -Force
 
