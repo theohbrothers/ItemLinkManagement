@@ -14,21 +14,20 @@ function Add-Link {
         [string]$Value
         ,
         [Parameter(Mandatory=$false)]
-        [ValidateNotNullOrEmpty()]
         [switch]$Force
     )
     begin {
-        $Path = $Path.Trim()
-        $Value = $Value.Trim()
+        $Path = $PSBoundParameters['Path'].Trim()
+        $Value = $PSBoundParameters['Value'].Trim()
     }process {
         try {
-            "ItemType: '$($ItemType)', Path: '$($Path)', Value: '$($Value)'" | Write-Verbose
+            "ItemType: '$($PSBoundParameters['ItemType'])', Path: '$($Path)', Value: '$($Value)'" | Write-Verbose
             $item = Get-Item -Path $Path -ErrorAction SilentlyContinue
             if ($item) {
                 if (!$item.LinkType) {
                     throw "Existing item '$Path' is not a SymbolicLink or Junction."
                 }
-                if (($item.LinkType -eq $ItemType) -and ($item.Target -eq $Value)) {
+                if (($item.LinkType -eq $PSBoundParameters['ItemType']) -and ($item.Target -eq $Value)) {
                     "Matching item '$Path' already exists. Skipping" | Write-Verbose
                     return
                 }
@@ -38,7 +37,7 @@ function Add-Link {
                 }
             }
             "Creating item '$Path'" | Write-Verbose
-            New-Item -Path $Path -ItemType $ItemType -Value $Value -Force:$Force
+            New-Item -Path $Path -ItemType $PSBoundParameters['ItemType'] -Value $Value -Force:$PSBoundParameters['Force']
         }catch {
             Write-Error -Exception $_.Exception -Message $_.Exception.Message -Category $_.CategoryInfo.Category -TargetObject $_.TargetObject
         }
