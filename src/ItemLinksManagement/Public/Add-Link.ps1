@@ -19,18 +19,14 @@ function Add-Link {
     )
     begin {
         $Path = $Path.Trim()
-        $ItemType = $ItemType.Trim()
         $Value = $Value.Trim()
     }process {
         try {
-            if ($ItemType -notmatch '^(symbolicLink|junction)$') {
-                throw "The only valid item types are 'symbolicLink' or 'junction'."
-            }
             "ItemType: '$($ItemType)', Path: '$($Path)', Value: '$($Value)'" | Write-Verbose
             $item = Get-Item -Path $Path -ErrorAction SilentlyContinue
             if ($item) {
                 if (!$item.LinkType) {
-                    throw "Item '$Path' is not a SymbolicLink or Junction."
+                    throw "Existing item '$Path' is not a SymbolicLink or Junction."
                 }
                 if (($item.LinkType -eq $ItemType) -and ($item.Target -eq $Value)) {
                     "Matching item '$Path' already exists. Skipping" | Write-Verbose
@@ -44,7 +40,7 @@ function Add-Link {
             "Creating item '$Path'" | Write-Verbose
             New-Item -Path $Path -ItemType $ItemType -Value $Value -Force:$Force
         }catch {
-            $_ | Write-Error
+            Write-Error -Exception $_.Exception -Message $_.Exception.Message -Category $_.CategoryInfo.Category -TargetObject $_.TargetObject
         }
     }
 }
