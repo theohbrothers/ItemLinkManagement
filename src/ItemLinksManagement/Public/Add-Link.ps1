@@ -19,6 +19,10 @@ function Add-Link {
     begin {
         $Path = $PSBoundParameters['Path'].Trim()
         $Value = $PSBoundParameters['Value'].Trim()
+        if ($env:OS -eq 'Windows_NT') {
+            $Path = $Path -replace "/","\"
+            $Value = $Value -replace "/","\"
+        }
     }process {
         try {
             "ItemType: '$($PSBoundParameters['ItemType'])', Path: '$($Path)', Value: '$($Value)'" | Write-Verbose
@@ -31,9 +35,9 @@ function Add-Link {
                     "Matching item '$Path' already exists. Skipping" | Write-Verbose
                     return
                 }
-                if ($item.LinkType -eq 'Junction') {                                # New-Item -Force does not work for junctions, hence the need to remove the existing item
+                if ($item.LinkType -ne $PSBoundParameters['ItemType'] -Or $item.LinkType -eq 'Junction') {      # New-Item -Force does not work for junctions, hence the need to remove the existing item
                     "Removing existing junction item '$Path'" | Write-Verbose
-                    $item.Delete()                                                  # Remove-Item -Force and -Confirm:$false do not suppress confirmation for removal if items exists within symlink or junction target
+                    $item.Delete()                                                                              # Remove-Item -Force and -Confirm:$false do not suppress confirmation for removal if items exists within symlink or junction target
                 }
             }
             "Creating item '$Path'" | Write-Verbose
