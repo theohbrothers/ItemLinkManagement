@@ -1,19 +1,19 @@
 function Add-Link {
     [CmdletBinding()]
     Param (
-        [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory=$true, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [string]$Path
         ,
-        [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory=$true, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateSet("SymbolicLink", "Junction")]
         [string]$ItemType
         ,
-        [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory=$true, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [string]$Value
         ,
-        [Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNullOrEmpty()]
         [switch]$Force
     )
