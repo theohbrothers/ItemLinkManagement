@@ -3,7 +3,7 @@
 A powershell module for managing symlinks and junctions.
 
 ```powershell
-Import-Module .\src\ItemLinksManagement\ItemLinksManagement.psm1 -Force
+Import-Module .\src\ItemLinksManagement\ItemLinksManagement.psm1 -Force -Verbose
 
 # Add symbolic link
 Add-Link -Path $path -ItemType SymbolicLink -Value $value
