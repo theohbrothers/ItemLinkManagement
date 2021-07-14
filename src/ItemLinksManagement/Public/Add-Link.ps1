@@ -1,15 +1,15 @@
 function Add-Link {
     [CmdletBinding()]
     Param (
-        [Parameter(Mandatory=$true, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
         [ValidateNotNullOrEmpty()]
         [string]$Path
         ,
-        [Parameter(Mandatory=$true, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
         [ValidateSet("SymbolicLink", "Junction")]
         [string]$ItemType
         ,
-        [Parameter(Mandatory=$true, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
         [ValidateNotNullOrEmpty()]
         [string]$Value
         ,
@@ -35,7 +35,7 @@ function Add-Link {
                     "Matching item '$_path' already exists. Skipping" | Write-Verbose
                     return
                 }
-                if ($item.LinkType -ne $ItemType) {            # New-Item -Force does not work for junctions, hence the need to remove the existing item
+                if ($item.LinkType -ne $ItemType) {# New-Item -Force does not work for junctions, hence the need to remove the existing item
                     "Removing existing junction item '$_path'" | Write-Verbose
                     $item.Delete()                                                  # Remove-Item -Force and -Confirm:$false do not suppress confirmation for removal if items exists within symlink or junction target
                 }
