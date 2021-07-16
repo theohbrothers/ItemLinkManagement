@@ -37,7 +37,7 @@ function Add-Link {
                 }
                 if ($ItemType -eq 'Junction') {
                     if ($item.LinkType -ne $ItemType) {                             # New-Item -Force does not work for junctions, hence the need to remove the existing item
-                        "Itemtype specified as 'Junction'. Removing differing existing link '$Path'" | Write-Verbose
+                        "Itemtype specified as 'Junction'. Removing item '$($item.FullName)' of different item type '$($item.LinkType)'" | Write-Verbose
                         $item.Delete()                                              # Remove-Item -Force and -Confirm:$false do not suppress confirmation for removal if items exists within symlink or junction target
                     }
                 }
