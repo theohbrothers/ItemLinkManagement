@@ -6,7 +6,7 @@ function Add-Link {
         [string]$Path
         ,
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
-        [ValidateSet("SymbolicLink", "Junction")]
+        [ValidateSet('HardLink', 'Junction', 'SymbolicLink')]
         [string]$ItemType
         ,
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
@@ -29,7 +29,7 @@ function Add-Link {
             $item = Get-Item -Path $_path -ErrorAction SilentlyContinue
             if ($item) {
                 if (!$item.LinkType) {
-                    throw "Existing item '$_path' is not a SymbolicLink or Junction."
+                    throw "Existing item '$_path' is not a HardLink, Junction, or SymbolicLink."
                 }
                 if (($item.LinkType -eq $ItemType) -and ($item.Target -eq $_value)) {
                     "Matching item '$_path' already exists. Skipping" | Write-Verbose
