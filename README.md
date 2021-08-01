@@ -1,9 +1,9 @@
-# ItemLinksManagement
+# ItemLinkManagement
 
 A powershell module for managing hardlinks, symlinks, and junctions.
 
 ```powershell
-Import-Module .\src\ItemLinksManagement\ItemLinksManagement.psm1 -Force -Verbose
+Import-Module .\src\ItemLinkManagement\ItemLinkManagement.psm1 -Force -Verbose
 
 # Add symbolic link
 Add-Link -Path $path -ItemType SymbolicLink -Value $value
