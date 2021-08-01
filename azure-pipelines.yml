@@ -1,0 +1,83 @@
+trigger:
+  branches:
+    include:
+    - 'master'
+    exclude:
+    - '*'
+  tags:
+    include:
+    - '*'
+pr:
+  autoCancel: false
+  branches:
+    include:
+    - '*'
+
+resources:
+  repositories:
+  - repository: PSModulePublisher
+    type: github
+    name: theohbrothers/PSModulePublisher
+    endpoint: theohbrothers                   # Check for your 'Type: Github' connection under 'Project Settings' > 'Service connections'
+    ref: refs/tags/v0.4.0
+
+stages:
+- stage: build_test
+  displayName: Build, Test
+  jobs:
+  - job: windows_pwsh
+    displayName: '[Windows] PowerShell Core'
+    pool:
+      vmImage: windows-2019
+    steps:
+    - checkout: self
+      submodules: recursive
+    - template: templates/azure-pipelines/entrypoint/windows/continuous-build.yml@PSModulePublisher
+  - job: windows_powershell_5_1
+    displayName: '[Windows] PowerShell 5.1'
+    pool:
+      vmImage: windows-2019
+    steps:
+    - checkout: self
+      submodules: recursive
+    - template: templates/azure-pipelines/entrypoint/windows/powershell/continuous-build.yml@PSModulePublisher
+  - job: linux
+    displayName: '[Linux] PowerShell Core'
+    pool:
+      vmImage: ubuntu-18.04
+    steps:
+    - checkout: self
+      submodules: recursive
+    - template: templates/azure-pipelines/entrypoint/linux/continuous-build.yml@PSModulePublisher
+  - job: linux_container
+    displayName: '[Linux] [Container] PowerShell'
+    pool:
+      vmImage: ubuntu-18.04
+    strategy:
+      matrix:
+        7.1.3:
+          containerImage: theohbrothers/docker-powershell:7.1.3-ubuntu-18.04-20210316-git
+        7.0.3:
+          containerImage: theohbrothers/docker-powershell:7.0.3-ubuntu-18.04-20201027-git
+        6.2.4:
+          containerImage: theohbrothers/docker-powershell:6.2.4-ubuntu-18.04-git
+        6.1.3:
+          containerImage: theohbrothers/docker-powershell:6.1.3-ubuntu-18.04-git
+    container: $[ variables['containerImage'] ]
+    steps:
+    - checkout: self
+      submodules: recursive
+    - template: templates/azure-pipelines/entrypoint/linux/continuous-build.yml@PSModulePublisher
+- stage: publish
+  displayName: Publish
+  dependsOn: build_test
+  jobs:
+  - job: windows_powershell_5_1
+    displayName: '[Windows] PowerShell 5.1'
+    pool:
+      vmImage: windows-2019
+    steps:
+    - checkout: self
+      submodules: recursive
+    - template: templates/azure-pipelines/entrypoint/windows/powershell/continuous-build.yml@PSModulePublisher
+    - template: templates/azure-pipelines/entrypoint/windows/powershell/publish.yml@PSModulePublisher
