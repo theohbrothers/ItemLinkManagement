@@ -24,7 +24,7 @@
     # FormatsToProcess = @()
     # NestedModules = @()
     FunctionsToExport = @(
-        'Add-Link'
+        'New-ItemLink'
     )
     CmdletsToExport = @()
     VariablesToExport = @()

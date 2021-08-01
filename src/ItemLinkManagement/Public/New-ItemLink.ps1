@@ -1,4 +1,4 @@
-function Add-Link {
+function New-ItemLink {
     [CmdletBinding()]
     Param (
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
