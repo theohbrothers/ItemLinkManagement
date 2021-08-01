@@ -6,10 +6,10 @@ A powershell module for managing hardlinks, symlinks, and junctions.
 Import-Module .\src\ItemLinkManagement\ItemLinkManagement.psm1 -Force -Verbose
 
 # Add symbolic link
-Add-Link -Path $path -ItemType SymbolicLink -Value $value
+New-ItemLink -Path $path -ItemType SymbolicLink -Value $value
 
 # Add junction
-Add-Link -Path $path -ItemType Junction -Value $value
+New-ItemLink -Path $path -ItemType Junction -Value $value
 
 ```
 
