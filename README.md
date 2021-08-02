@@ -51,7 +51,7 @@ Sample definition files can be found [here](docs/samples/definitions/links).
 #### Parameters
 
 ```powershell
-New-ItemLink [-Path] <string> [-ItemType] {HardLink | Junction | SymbolicLink} [-Value] <string> [-Force] [<CommonParameters>]
+New-ItemLink [-Path] <string> [-Value] <string> [-ItemType] {HardLink | Junction | SymbolicLink} [-Force] [<CommonParameters>]
 ```
 
 #### Examples

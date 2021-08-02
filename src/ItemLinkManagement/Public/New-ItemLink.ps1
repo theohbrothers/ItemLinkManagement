@@ -6,12 +6,12 @@ function New-ItemLink {
         [string]$Path
         ,
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
-        [ValidateSet('HardLink', 'Junction', 'SymbolicLink')]
-        [string]$ItemType
-        ,
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
         [ValidateNotNullOrEmpty()]
         [string]$Value
+        ,
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
+        [ValidateSet('HardLink', 'Junction', 'SymbolicLink')]
+        [string]$ItemType
         ,
         [Parameter(Mandatory=$false)]
         [switch]$Force
