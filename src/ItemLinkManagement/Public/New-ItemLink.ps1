@@ -17,6 +17,7 @@ function New-ItemLink {
         [switch]$Force
     )
     begin {
+        $_errorActionPreference = $ErrorActionPreference
         $_path = $Path.Trim()
         $_value = $Value.Trim()
         if ($env:OS -eq 'Windows_NT') {
@@ -25,6 +26,7 @@ function New-ItemLink {
         }
     }process {
         try {
+            $ErrorActionPreference = 'Stop'
             "ItemType: '$($ItemType)', Path: '$($_path)', Value: '$($_value)'" | Write-Verbose
             $item = Get-Item -Path $_path -ErrorAction SilentlyContinue
             if ($item) {
@@ -45,7 +47,7 @@ function New-ItemLink {
             "Creating item '$_path'" | Write-Verbose
             New-Item -Path $_path -ItemType $ItemType -Value $_value -Force:$Force
         }catch {
-            Write-Error -Exception $_.Exception -Message $_.Exception.Message -Category $_.CategoryInfo.Category -TargetObject $_.TargetObject
+            Write-Error -ErrorRecord $_ -ErrorAction $_errorActionPreference
         }
     }
 }
