@@ -1,0 +1,42 @@
+[
+  {
+    "Path": "~\\.bash_aliases",
+    "Value": "~\\my-configs\\bash\\.bash_aliases",
+    "ItemType": "HardLink"
+  },
+  {
+    "Path": "~\\OneDrive\\Documents",
+    "Value": "~\\Documents",
+    "ItemType": "Junction"
+  },
+  {
+    "Path": "~\\OneDrive\\Backup",
+    "Value": "D:\\Backup",
+    "ItemType": "Junction"
+  },
+  {
+    "Path": "~\\Documents\\WindowsPowerShell\\Microsoft.PowerShell_profile.ps1",
+    "Value": "~\\my-configs\\powershell\\Microsoft.PowerShell_profile.ps1",
+    "ItemType": "HardLink"
+  },
+  {
+    "Path": "~\\Documents\\PowerShell\\Microsoft.PowerShell_profile.ps1",
+    "Value": "~\\my-configs\\powershell\\Microsoft.PowerShell_profile.ps1",
+    "ItemType": "HardLink"
+  },
+  {
+    "Path": "~\\AppData\\Roaming\\Code\\User\\snippets",
+    "Value": "~\\my-configs\\Code\\User\\snippets",
+    "ItemType": "SymbolicLink"
+  },
+  {
+    "Path": "~\\AppData\\Roaming\\Code\\User\\keybindings.json",
+    "Value": "~\\my-configs\\Code\\User\\keybindings.json",
+    "ItemType": "HardLink"
+  },
+  {
+    "Path": "~\\AppData\\Roaming\\Code\\User\\settings.json",
+    "Value": "~\\my-configs\\Code\\User\\settings.json",
+    "ItemType": "HardLink"
+  }
+]
