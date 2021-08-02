@@ -6,16 +6,18 @@ Describe "New-ItemLink" -Tag 'Unit' {
 
     $testDrive = Convert-Path 'TestDrive:\'
 
+    # Note: All our test files will be hidden files, for the sake of Windows
+
     # Source of truth
-    $testFileFullName = Join-Path $testDrive 'testfile'
-    $testDirectoryFullName = Join-Path $testDrive 'testdirectory'
+    $testFileFullName = Join-Path $testDrive '.testfile'
+    $testDirectoryFullName = Join-Path $testDrive '.testdirectory'
 
     # Link
-    $testFileLinkFullName = Join-Path $testDrive 'testfilelink'
-    $testDirectoryLinkFullName = Join-Path $testDrive 'testdirectorylink'
+    $testFileLinkFullName = Join-Path $testDrive '.testfilelink'
+    $testDirectoryLinkFullName = Join-Path $testDrive '.testdirectorylink'
 
     AfterEach {
-        # Cleanup
+        # Powershell 5 requires a special way to remove a SymbolicLink, see: https://stackoverflow.com/a/63172492
         if ($PSVersionTable.PSVersion.Major -le 5) {
             Get-ChildItem "$testDrive/*" -Attributes ReparsePoint | % { $_.Delete() }
         }
@@ -25,7 +27,8 @@ Describe "New-ItemLink" -Tag 'Unit' {
     Context 'Exceptions' {
 
         It "Should throw when ItemType is invalid" {
-            $testFile = New-Item $testFileFullName -ItemType File
+            $testFile = New-Item $testFileFullName -ItemType File -Force
+            $testFile.Attributes += 'Hidden'
             $params = @{
                 ItemType = 'foo'
                 Path = $testFileLinkFullName
@@ -40,7 +43,8 @@ Describe "New-ItemLink" -Tag 'Unit' {
     Context 'Error stream' {
 
         It "Should output to error stream" {
-            $testFile = New-Item $testFileFullName -ItemType File
+            $testFile = New-Item $testFileFullName -ItemType File -Force
+            $testFile.Attributes += 'Hidden'
             $params = @{
                 ItemType = 'SymbolicLink'
                 Path = $testFile.FullName # Deliberately simulate an error by trying to create a link in place of its file
@@ -55,7 +59,8 @@ Describe "New-ItemLink" -Tag 'Unit' {
         }
 
         It "Should not output to error stream" {
-            $testFile = New-Item $testFileFullName -ItemType File
+            $testFile = New-Item $testFileFullName -ItemType File -Force
+            $testFile.Attributes += 'Hidden'
             $params = @{
                 ItemType = 'SymbolicLink'
                 Path = $testFile.FullName # Deliberately simulate an error by trying to create a link in place of its file
@@ -73,7 +78,8 @@ Describe "New-ItemLink" -Tag 'Unit' {
     Context 'Behavior' {
 
         It "Should create HardLink for file" {
-            $testFile = New-Item $testFileFullName -ItemType File
+            $testFile = New-Item $testFileFullName -ItemType File -Force
+            $testFile.Attributes += 'Hidden'
             $params = @{
                 ItemType = 'HardLink'
                 Path = $testFileLinkFullName
@@ -87,25 +93,28 @@ Describe "New-ItemLink" -Tag 'Unit' {
             $result.LinkType | Should -Be $params['ItemType']
         }
 
-        # It 'Should create a HardLink for file if it already exists when using -Force' {
-        #     $testFile = New-Item $testFileFullName -ItemType File
-        #     $testFileLink = New-Item $testFileLinkFullName -Value $testFile.FullName -ItemType 'HardLink'
-        #     $params = @{
-        #         ItemType = 'HardLink'
-        #         Path = $testFileLink.FullName
-        #         Value = $testFile.FullName
-        #         Force = $true
-        #         ErrorAction = 'Stop'
-        #     }
+        It 'Should create a HardLink for file even if it already exists when using -Force' {
+            $testFile = New-Item $testFileFullName -ItemType File -Force
+            $testFile.Attributes += 'Hidden'
+            $testFileLink = New-Item $testFileLinkFullName -Value $testFile.FullName -ItemType 'HardLink' -Force
+            $testFileLink.Attributes += 'Hidden'
+            $params = @{
+                ItemType = 'HardLink'
+                Path = $testFileLink.FullName
+                Value = $testFile.FullName
+                Force = $true
+                ErrorAction = 'Stop'
+            }
 
-        #     $result = New-ItemLink @params
+            $result = New-ItemLink @params
 
-        #     $result | Should -BeOfType [System.IO.FileInfo]
-        #     $result.LinkType | Should -Be $params['ItemType']
-        # }
+            $result | Should -BeOfType [System.IO.FileInfo]
+            $result.LinkType | Should -Be $params['ItemType']
+        }
 
         It "Should create SymbolicLink for file" {
-            $testFile = New-Item $testFileFullName -ItemType File
+            $testFile = New-Item $testFileFullName -ItemType File -Force
+            $testFile.Attributes += 'Hidden'
             $params = @{
                 ItemType = 'SymbolicLink'
                 Path = $testFileLinkFullName
@@ -121,7 +130,8 @@ Describe "New-ItemLink" -Tag 'Unit' {
 
         It "Should create Junction for directory (Windows)" {
             if ($env:OS -eq 'Windows_NT') {
-                $testDirectory = New-Item $testDirectoryFullName -ItemType Directory
+                $testDirectory = New-Item $testDirectoryFullName -ItemType Directory -Force
+                $testDirectory.Attributes += 'Hidden'
                 $params = @{
                     ItemType = 'Junction'
                     Path = $testDirectoryLinkFullName
@@ -138,35 +148,37 @@ Describe "New-ItemLink" -Tag 'Unit' {
             }
         }
 
-        # It 'Should create a Junction for directory if it already exists when using -Force (Windows)' {
-        #     if ($env:OS -eq 'Windows_NT') {
-        #         $testDirectory = New-Item $testDirectoryFullName -ItemType Directory
-        #         $testDirectoryLink = New-Item $testDirectoryLinkFullName -Value $testDirectory.FullName -ItemType 'Junction'
-        #         $params = @{
-        #             ItemType = 'Junction'
-        #             Path = $testDirectoryLink.FullName
-        #             Value = $testDirectory.FullName
-        #             Force = $true
-        #             ErrorAction = 'Stop'
-        #         }
-        #         New-Item @params > $null
+        It 'Should create a Junction for directory even if it already exists when using -Force (Windows)' {
+            if ($env:OS -eq 'Windows_NT') {
+                $testDirectory = New-Item $testDirectoryFullName -ItemType Directory -Force
+                $testDirectory.Attributes += 'Hidden'
+                $testDirectoryLink = New-Item $testDirectoryLinkFullName -Value $testDirectory.FullName -ItemType 'Junction' -Force
+                $testDirectoryLink.Attributes += 'Hidden'
+                $params = @{
+                    ItemType = 'Junction'
+                    Path = $testDirectoryLink.FullName
+                    Value = $testDirectory.FullName
+                    Force = $true
+                    ErrorAction = 'Stop'
+                }
 
-        #         $result = New-ItemLink @params
+                $result = New-ItemLink @params
 
-        #         $result | Should -BeOfType [System.IO.DirectoryInfo]
-        #         $result.LinkType | Should -Be $params['ItemType']
-        #     }else {
-        #         $true
-        #     }
-        # }
+                $result | Should -BeOfType [System.IO.DirectoryInfo]
+                $result.LinkType | Should -Be $params['ItemType']
+            }else {
+                $true
+            }
+        }
 
         It "Should create SymbolicLink for directory" {
-            $testDirectory = New-Item $testDirectoryFullName -ItemType Directory
+            $testDirectory = New-Item $testDirectoryFullName -ItemType Directory -Force
+            $testDirectory.Attributes += 'Hidden'
             $params = @{
                 ItemType = 'SymbolicLink'
                 Path = $testDirectoryLinkFullName
                 Value = $testDirectory.FullName
-                ErrorAction =  'Stop'
+                ErrorAction = 'Stop'
             }
 
             $result = New-ItemLink @params
@@ -175,23 +187,24 @@ Describe "New-ItemLink" -Tag 'Unit' {
             $result.LinkType | Should -Be $params['ItemType']
         }
 
-        # It 'Should create a SymbolicLink for directory even it already exists when using -Force' {
-        #     $testDirectory = New-Item $testDirectoryFullName -ItemType Directory
-        #     $testDirectoryLink = New-Item $testDirectoryLinkFullName -Value $testDirectory.FullName -ItemType 'SymbolicLink'
-        #     $params = @{
-        #         ItemType = 'SymbolicLink'
-        #         Path = $testDirectoryLink.FullName
-        #         Value = $testDirectory.FullName
-        #         Force = $true
-        #         ErrorAction = 'Stop'
-        #         Verbose = $true
-        #     }
+        It 'Should create a SymbolicLink for directory even if it already exists when using -Force' {
+            $testDirectory = New-Item $testDirectoryFullName -ItemType Directory -Force
+            $testDirectory.Attributes += 'Hidden'
+            $testDirectoryLink = New-Item $testDirectoryLinkFullName -Value $testDirectory.FullName -ItemType 'SymbolicLink' -Force
+            $testDirectoryLink.Attributes += 'Hidden'
+            $params = @{
+                ItemType = 'SymbolicLink'
+                Path = $testDirectoryLink.FullName
+                Value = $testDirectory.FullName
+                Force = $true
+                ErrorAction = 'Stop'
+            }
 
-        #     $result = New-ItemLink @params
+            $result = New-ItemLink @params
 
-        #     $result | Should -BeOfType [System.IO.DirectoryInfo]
-        #     $result.LinkType | Should -Be $params['ItemType']
-        # }
+            $result | Should -BeOfType [System.IO.DirectoryInfo]
+            $result.LinkType | Should -Be $params['ItemType']
+        }
 
     }
 }

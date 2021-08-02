@@ -28,19 +28,23 @@ function New-ItemLink {
         try {
             $ErrorActionPreference = 'Stop'
             "ItemType: '$($ItemType)', Path: '$($_path)', Value: '$($_value)'" | Write-Verbose
-            $item = Get-Item -Path $_path -ErrorAction SilentlyContinue
+            $item = Get-Item -Path $_path -Force -ErrorAction SilentlyContinue
             if ($item) {
                 if (!$item.LinkType) {
                     throw "Existing item '$_path' is not a HardLink, Junction, or SymbolicLink."
                 }
-                if (($item.LinkType -eq $ItemType) -and ($item.Target -eq $_value)) {
-                    "Matching item '$_path' already exists. Skipping" | Write-Verbose
-                    return
+                if (!$Force) {
+                    if (($item.LinkType -eq $ItemType) -and ($item.Target -eq $_value)) {
+                        "Matching item '$_path' already exists. Skipping" | Write-Verbose
+                        return
+                    }
                 }
+                # New-Item with -Force cannot override an existing Junction, hence the need to remove the existing Link: Junction, SymbolicLink, or HardLink
                 if ($ItemType -eq 'Junction') {
-                    if ($item.LinkType -ne $ItemType) {                             # New-Item -Force does not work for junctions, hence the need to remove the existing item
-                        "Itemtype specified as 'Junction'. Removing item '$($item.FullName)' of different item type '$($item.LinkType)'" | Write-Verbose
-                        $item.Delete()                                              # Remove-Item -Force and -Confirm:$false do not suppress confirmation for removal if items exists within symlink or junction target
+                    if ($PSVersionTable.PSVersion.Major -le 5 -and $item.Attributes -match 'ReparsePoint') {
+                        $item.Delete() # Powershell 5 requires a special way to remove a SymbolicLink, see: https://stackoverflow.com/a/63172492
+                    }else {
+                        $item | Remove-Item -Force
                     }
                 }
             }
