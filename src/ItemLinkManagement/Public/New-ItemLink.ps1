@@ -34,9 +34,14 @@ function New-ItemLink {
                     throw "Existing item '$_path' is not a HardLink, Junction, or SymbolicLink."
                 }
                 if (!$Force) {
-                    if (($item.LinkType -eq $ItemType) -and ($item.Target -eq $_value)) {
-                        "Matching item '$_path' already exists. Skipping" | Write-Verbose
-                        return
+                    if ($item.LinkType -eq $ItemType) {
+                        # The UNC target of an existing item's .Target is returned in the format 'UNC\*', thus requiring formatting as '\\*' for evaluation
+                        $matchInfo = $item.Target | Select-String -Pattern '^UNC\\(.*)'
+                        $itemTarget = if ($matchInfo) { "\\$($matchInfo.Matches.Groups[1].Value)" } else { $item.Target }
+                        if ($itemTarget -eq $_value) {
+                            "Matching item '$_path' already exists. Skipping" | Write-Verbose
+                            return
+                        }
                     }
                 }
                 # New-Item with -Force cannot override an existing Junction, hence the need to remove the existing Link: Junction, SymbolicLink, or HardLink
