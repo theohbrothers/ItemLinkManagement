@@ -41,7 +41,7 @@ function New-ItemLink {
                 }
                 # New-Item with -Force cannot override an existing Junction, hence the need to remove the existing Link: Junction, SymbolicLink, or HardLink
                 if ($ItemType -eq 'Junction') {
-                    if ($PSVersionTable.PSVersion.Major -le 5 -and $item.Attributes -match 'ReparsePoint') {
+                    if ($PSVersionTable.PSVersion.Major -le 5) {
                         $item.Delete() # Powershell 5 requires a special way to remove a SymbolicLink, see: https://stackoverflow.com/a/63172492
                     }else {
                         $item | Remove-Item -Force
