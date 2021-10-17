@@ -63,7 +63,7 @@ Get-ChildItem -Path "/path/to/links/" -File | ? { $_.Extension -eq '.ps1' } | So
 
 ## Introduction
 
-A PowerShell module for managing hardlinks, junctions, symbolic links.
+A PowerShell module for managing hardlinks, junctions, and symbolic links.
 
 ## Requirements
 

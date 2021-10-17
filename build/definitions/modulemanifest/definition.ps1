@@ -10,7 +10,7 @@
     Author = 'The Oh Brothers'
     CompanyName = 'The Oh Brothers'
     Copyright = '(c) 2021 The Oh Brothers'
-    Description = 'A PowerShell module for managing hardlinks, junctions, symbolic links.'
+    Description = 'A PowerShell module for managing hardlinks, junctions, and symbolic links.'
     PowerShellVersion = '3.0'
     # PowerShellHostName = ''
     # PowerShellHostVersion = ''
