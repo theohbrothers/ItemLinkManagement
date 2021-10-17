@@ -9,6 +9,58 @@
 [badge-version-powershellgallery-releases-img]: https://img.shields.io/powershellgallery/v/ItemLinkManagement?logo=powershell&logoColor=white&label=PSGallery&labelColor=&style=flat-square
 [badge-version-powershellgallery-releases-src]: https://www.powershellgallery.com/packages/ItemLinkManagement/
 
+## Deprecation Notice
+
+The module is merely a wrapper around PowerShell's built-in cmdlet `New-Item` to allow "overwriting" of existing junctions by removing existing ones before creation of replacement links regardless of PowerShell version. Everything else about link creation can already be achieved with `New-Item -Force`. As such, the module is now deprecated.
+
+To create links without the module, first define links as spelt out [here](#links). Links can then be retrieved from definition files like so:
+
+```powershell
+# Via .ps1 link definition file
+$links = . "/path/to/links.ps1"
+
+# Via .ps1 link definition file(s) within directory
+$links = Get-ChildItem -Path "/path/to/links/" -File | ? { $_.Extension -eq '.ps1' } | Sort-Object | % { . $_.FullName }
+```
+
+Once retrieved, links can easily be created via following snippet:
+
+```powershell
+# Create links
+$links | % {
+    try {
+        "Path: '$($_.Path )', Value: '$($_.Value)', ItemType: '$($_.ItemType)'" | Write-Verbose
+        $item = Get-Item -Path $_.Path -Force -ErrorAction SilentlyContinue
+        # New-Item with -Force cannot override an existing Junction, hence the need to remove the existing Link: Junction, SymbolicLink, or HardLink
+        if ($item -And $_.ItemType -eq 'Junction') {
+            if ($PSVersionTable.PSVersion.Major -le 5) {
+                $item.Delete() # Powershell 5 requires a special way to remove a SymbolicLink, see: https://stackoverflow.com/a/63172492
+            }else {
+                $item | Remove-Item -Force
+            }
+        }
+        "Creating item '$($_.Path)'" | Write-Verbose
+        New-Item -Path $_.Path -Value $_.Value -ItemType $_.ItemType -Force -Verbose
+    }catch {
+        $_ | Write-Error
+    }
+}
+```
+
+Alternatively, links can be retrieved and piped straight for creation without storing them in a variable:
+
+```powershell
+# Via .ps1 link definition file
+. "/path/to/links.ps1" | % {
+    try {
+        ...
+
+# Via .ps1 link definition file(s) within directory
+Get-ChildItem -Path "/path/to/links/" -File | ? { $_.Extension -eq '.ps1' } | Sort-Object | % { . $_.FullName } | % {
+    try {
+        ...
+```
+
 ## Introduction
 
 A PowerShell module for managing hardlinks, junctions, symbolic links.
